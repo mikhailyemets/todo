@@ -1,19 +1,21 @@
+from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from .forms import TaskForm, TagForm, TaskUpdateForm
+from .forms import TaskForm, TagForm, TaskUpdateForm, SearchForm
 from .models import Task, Tag
 
 
+@login_required
 def index(request: HttpRequest) -> HttpResponse:
-    tag_search = request.GET.get('tag-search')
+    tag_search = request.GET.get("tag-search")
     tasks = Task.objects.all()
 
     if tag_search:
         tasks = tasks.filter(tags__name__icontains=tag_search)
 
     paginator = Paginator(tasks, 5)
-    page = request.GET.get('page')
+    page = request.GET.get("page")
 
     try:
         tasks = paginator.page(page)
@@ -23,12 +25,13 @@ def index(request: HttpRequest) -> HttpResponse:
         tasks = paginator.page(paginator.num_pages)
 
     context = {
-        'tasks': tasks,
-        'page_obj': tasks,
-        'is_paginated': paginator.num_pages > 1,
+        "tasks": tasks,
+        "page_obj": tasks,
+        "is_paginated": paginator.num_pages > 1,
     }
 
     return render(request, 'todo/index.html', context)
+
 
 
 def add_task(request: HttpRequest) -> HttpResponse:
