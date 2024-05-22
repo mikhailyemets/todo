@@ -5,10 +5,16 @@ from .forms import TaskForm, TagForm, TaskUpdateForm
 from .models import Task, Tag
 
 
-def index(request):
+def index(request: HttpRequest) -> HttpResponse:
+    tag_search = request.GET.get('tag-search')
     tasks = Task.objects.all()
+
+    if tag_search:
+        tasks = tasks.filter(tags__name__icontains=tag_search)
+
     paginator = Paginator(tasks, 5)
     page = request.GET.get('page')
+
     try:
         tasks = paginator.page(page)
     except PageNotAnInteger:
