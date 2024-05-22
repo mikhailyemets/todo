@@ -14,3 +14,8 @@
 .add-tag{
     float:right;
 }
+.pagination{
+    justify-content: center;
+    align-items: center;
+    margin-top:30px
+}

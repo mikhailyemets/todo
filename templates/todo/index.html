@@ -2,7 +2,7 @@
 {% block content %}
 <div class="container mt-5">
     <h1 class="mb-4 text-center">Todo List
-        <a href="{% url 'todo:add_task' %}" class="btn btn-primary add" title="Add New Task To List">+</a>
+        <a href="{% url 'todo:add_task' %}" class="btn btn-primary add" title="Add New Task To List">add task</a>
     </h1>
     <ul class="list-group">
         {% for task in tasks %}
@@ -20,12 +20,17 @@
                             {{ task.is_done|yesno:"Done,Not Done" }}
                         </span>
                     </small>
+                    <ul class="list-inline mt-2">
+                        {% for tag in task.tags.all %}
+                            <li class="list-inline-item"><span class="badge badge-info">{{ tag.name }}</span></li>
+                        {% endfor %}
+                    </ul>
                 </div>
                 <div>
-                    {% for tag in task.tags.all %}
-                        <span class="badge badge-info">{{ tag.name }}</span>
-                    {% endfor %}
-                    <a href="{% url 'todo:update_task' pk=task.id %}" class="btn btn-secondary mx-2" title="Update Task">Update</a>
+                    <a href="{% url 'todo:toggle_task_status' pk=task.id %}" class="btn btn-info" title="{% if task.is_done %}Undo{% else %}Mark as done{% endif %}">
+                        {% if task.is_done %}Undo{% else %}Mark as done{% endif %}
+                    </a>
+                    <a href="{% url 'todo:update_task' pk=task.id %}" class="btn btn-secondary" title="Update Task">Update</a>
                     <a href="{% url 'todo:delete_task' pk=task.id %}" class="btn btn-danger" title="Delete Task">Delete</a>
                 </div>
             </div>
@@ -33,4 +38,7 @@
         {% endfor %}
     </ul>
 </div>
+{% endblock %}
+{% block pagination %}
+  {% include "includes/pagination.html" %}
 {% endblock %}

@@ -1,15 +1,27 @@
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
-
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .forms import TaskForm, TagForm, TaskUpdateForm
 from .models import Task, Tag
 
 
-def index(request:HttpRequest) -> HttpResponse:
-    tasks = Task.objects.all().prefetch_related('tags')
+def index(request):
+    tasks = Task.objects.all()
+    paginator = Paginator(tasks, 5)
+    page = request.GET.get('page')
+    try:
+        tasks = paginator.page(page)
+    except PageNotAnInteger:
+        tasks = paginator.page(1)
+    except EmptyPage:
+        tasks = paginator.page(paginator.num_pages)
+
     context = {
-        'tasks': tasks
+        'tasks': tasks,
+        'page_obj': tasks,
+        'is_paginated': paginator.num_pages > 1,
     }
+
     return render(request, 'todo/index.html', context)
 
 
@@ -44,7 +56,16 @@ def tag_list(request: HttpRequest) -> HttpResponse:
 
 def update_tag(request: HttpRequest, pk: int) -> HttpResponse:
     tag = Tag.objects.get(id=pk)
-    return redirect('todo:tag_list')
+
+    if request.method == 'POST':
+        form = TagForm(request.POST, instance=tag)
+        if form.is_valid():
+            form.save()
+            return redirect('todo:tag_list')
+    else:
+        form = TagForm(instance=tag)
+
+    return render(request, 'todo/update_tag.html', {'form': form, 'tag': tag})
 
 
 def delete_tag(request: HttpRequest, pk: int) -> HttpResponse:
@@ -70,4 +91,11 @@ def update_task(request:HttpRequest, pk: int) -> HttpResponse:
 def delete_task(request, pk):
     task = Task.objects.get(id=pk)
     task.delete()
+    return redirect('todo:index')
+
+
+def toggle_task_status(request:HttpRequest, pk: int) -> HttpResponse:
+    task = Task.objects.get(id=pk)
+    task.is_done = not task.is_done
+    task.save()
     return redirect('todo:index')
