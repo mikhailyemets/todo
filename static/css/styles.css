@@ -8,3 +8,9 @@
     background-color: #b8e1d2;
     cursor: pointer;
 }
+.add{
+    float:right;
+}
+.add-tag{
+    float:right;
+}
