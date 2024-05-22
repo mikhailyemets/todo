@@ -7,7 +7,7 @@ from crispy_forms.layout import Layout, Submit
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ["content", "deadline", "is_done", "tags"]
+        fields = ["content", "deadline", "is_done", "owner","tags"]
 
 
 class TagForm(forms.ModelForm):
