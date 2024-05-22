@@ -1,0 +1,10 @@
+.sidebar{
+    margin-top:70px;
+    li:hover{
+        background-color: lavenderblush;
+    }
+}
+.list-group-item:hover{
+    background-color: #b8e1d2;
+    cursor: pointer;
+}

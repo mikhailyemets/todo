@@ -1,4 +1,28 @@
 {% extends '_base.html' %}
 {% block content %}
-  Check if it works
+  <div class="container mt-5">
+    <h1 class="mb-4 text-center">Todo List</h1>
+    <ul class="list-group">
+        {% for task in tasks %}
+        <li class="list-group-item">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="task-item">
+                    <h5 class="mb-1">{{ task.content }}</h5>
+                    <small>Created: {{ task.created_at }}</small>
+                    <small class="ml-3">Status:
+                        <span class="badge {% if task.is_done %}badge-success{% else %}badge-secondary{% endif %}">
+                            {{ task.is_done|yesno:"Done,Not Done" }}
+                        </span>
+                    </small>
+                </div>
+                <div>
+                    {% for tag in task.tags.all %}
+                    <span class="badge badge-info">{{ tag.name }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+  </div>
 {% endblock %}
